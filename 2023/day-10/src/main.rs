@@ -3,14 +3,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let grid = Grid::from_input(input);
 
-    let total = find_distance(grid)?;
+    let total = loop_length(grid)?;
     
     println!("{}", total / 2);
 
     Ok(())
 }
 
-pub fn find_distance(grid: Grid) -> Result<i32, Box<dyn std::error::Error>> {
+pub fn tile_connections(tile: char) -> Vec<Direction> {
+    match tile {
+        '|' => vec![Direction::North, Direction::South],
+        '-' => vec![Direction::East, Direction::West],
+        'L' => vec![Direction::North, Direction::East],
+        'J' => vec![Direction::North, Direction::West],
+        '7' => vec![Direction::South, Direction::West],
+        'F' => vec![Direction::East, Direction::South],
+        '.' => vec![],
+        _ => panic!("{}", format!("Unrecognised character: {:?}", tile))
+    }
+}
+
+pub fn loop_length(grid: Grid) -> Result<i32, Box<dyn std::error::Error>> {
     let starting = grid.start_tile_connections()?;
     
     assert!(starting.len() == 2);
@@ -193,19 +206,6 @@ impl Grid {
     }
 }
 
-pub fn tile_connections(tile: char) -> Vec<Direction> {
-    match tile {
-        '|' => vec![Direction::North, Direction::South],
-        '-' => vec![Direction::East, Direction::West],
-        'L' => vec![Direction::North, Direction::East],
-        'J' => vec![Direction::North, Direction::West],
-        '7' => vec![Direction::South, Direction::West],
-        'F' => vec![Direction::East, Direction::South],
-        '.' => vec![],
-        _ => panic!("{}", format!("Unrecognised character: {:?}", tile))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -316,7 +316,7 @@ LJ...";
         
         let grid = Grid::from_input(input);
 
-        let result = find_distance(grid);
+        let result = loop_length(grid);
 
         assert!(result.is_ok());
 
@@ -335,7 +335,7 @@ LJ...";
         
         let grid = Grid::from_input(input);
 
-        let result = find_distance(grid);
+        let result = loop_length(grid);
 
         assert!(result.is_ok());
 
@@ -354,7 +354,7 @@ LJ...";
 
         let grid = Grid::from_input(input);
 
-        let result = find_distance(grid);
+        let result = loop_length(grid);
 
         assert!(result.is_ok());
 
