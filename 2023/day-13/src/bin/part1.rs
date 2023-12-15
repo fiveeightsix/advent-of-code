@@ -1,13 +1,13 @@
 fn main() {
     let input = include_str!("input.txt");
 
-    let patterns: Vec<(Vec<usize>, Vec<usize>)> = input
+    let output: usize = input
         .split_terminator("\n\n")
         .map(|i| Pattern::from_input(i))
         .map(|p| get_reflections(&p))
-        .collect();
+        .sum();
 
-    println!("{:?}", patterns);
+    println!("{:?}", output);
 }
 
 fn str_as_bin_int(string: &str) -> usize {
@@ -16,14 +16,14 @@ fn str_as_bin_int(string: &str) -> usize {
 
 #[derive(Debug)]
 pub struct Pattern {
-    width: usize,
-    height: usize,
     columns: Vec<usize>,
     rows: Vec<usize>,
 }
 
 impl Pattern {
     pub fn from_input(input: &str) -> Self {
+        // We're going to treat the rows and columns as binary numbers,
+        // so we first convert the input to a 2D matrix of characters.
         let tiles: Vec<Vec<char>> = input
             .split_terminator("\n")
             .map(|row| row
@@ -64,8 +64,6 @@ impl Pattern {
         }
         
         Pattern {
-            width,
-            height,
             columns,
             rows,
         }
@@ -97,7 +95,7 @@ fn is_reflection_before_point(line: &Vec<usize>, point: usize) -> bool {
     }
 }
 
-fn get_reflections(pattern: &Pattern) -> (Vec<usize>, Vec<usize>) {
+fn get_reflections(pattern: &Pattern) -> usize {
     let mut column_reflections = vec![];
 
     for x in 0..pattern.columns.len() {
@@ -114,9 +112,12 @@ fn get_reflections(pattern: &Pattern) -> (Vec<usize>, Vec<usize>) {
         }
     }
 
-    println!("columns: {:?}, ref: {:?} -- rows: {:?}, ref: {:?}", pattern.columns, column_reflections, pattern.rows, row_reflections);
+    println!("column ref: {:?} -- row ref: {:?}", column_reflections, row_reflections);
 
-    (column_reflections, row_reflections)
+    let column_total: usize = column_reflections.iter().sum();
+    let row_total: usize = row_reflections.iter().map(|r| r * 100).sum();
+
+    column_total + row_total
 }
 
 
