@@ -19,7 +19,7 @@ fn part1(input: &str) -> usize {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Direction {
+enum Direction {
     North,
     East,
     South,
@@ -27,7 +27,7 @@ pub enum Direction {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct Point {
+struct Point {
     x: usize,
     y: usize,
 }
@@ -72,7 +72,7 @@ impl Contraption {
 
     pub fn get_tile(&self, point: &Point) -> char {
         assert!(
-            point.x >= 0 && point.x < self.width && point.y >= 0 && point.y < self.height,
+            point.x < self.width && point.y < self.height,
             "Point lies outside of tile set"
         );
 
@@ -101,33 +101,35 @@ impl Contraption {
         let tile = self.get_tile(&segment.location);
 
         let next_directions = match tile {
+            // Empty tiles allow the beam to continue in whatever its
+            // current direction of travel is.
             '.' => vec![segment.direction.clone()],
+            // Mirrors are double-sided, and reflect at 90 degree angles
+            // (note the `\` character needs to be escaped).
             '\\' => match segment.direction {
                 Direction::North => vec![Direction::West],
                 Direction::East => vec![Direction::South],
                 Direction::South => vec![Direction::East],
                 Direction::West => vec![Direction::North],
-                dir => vec![dir.clone()]
             },
             '/' => match segment.direction {
                 Direction::North => vec![Direction::East],
                 Direction::East => vec![Direction::North],
                 Direction::South => vec![Direction::West],
                 Direction::West => vec![Direction::South],
-                dir => vec![dir.clone()]
             },
+            // Splitters send the beam in two directions if entered from the
+            // side, otherwise they allow the beam to continue.
             '|' => match segment.direction {
                 Direction::East | Direction::West => vec![Direction::North, Direction::South],
-                dir => vec![dir.clone()]
+                d => vec![d.clone()]
             },
             '-' => match segment.direction {
                 Direction::North | Direction::South => vec![Direction::East, Direction::West],
-                dir => vec![dir.clone()]
+                d => vec![d.clone()]
             },
             _ => panic!("Unrecognised tile")
         };
-
-        println!("segment: {:?}, tile: {}, next: {:?}", segment, tile, next_directions);
 
         next_directions
             .iter()
