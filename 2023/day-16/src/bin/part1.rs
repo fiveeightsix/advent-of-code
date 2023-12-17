@@ -176,15 +176,17 @@ impl<'a> BeamState<'a> {
     }
 
     fn get_energised(&self) -> Vec<Vec<usize>> {
-        let mut energy: Vec<Vec<usize>> = (0..self.contraption.height)
+        let mut energised: Vec<Vec<usize>> = (0..self.contraption.height)
             .map(|_| (0..self.contraption.width).map(|_| 0).collect())
             .collect();
 
         for segment in &self.visited {
-            energy[segment.location.y][segment.location.x] += 1;
+            if energised[segment.location.y][segment.location.x] == 0 {
+                energised[segment.location.y][segment.location.x] += 1;
+            }
         }
 
-        energy
+        energised
     }
 
     pub fn render_energised(&self) -> String {
@@ -211,7 +213,6 @@ impl<'a> BeamState<'a> {
         self.get_energised()
             .into_iter()
             .flatten()
-            .map(|value| if value > 0 { 1 } else { 0 })
             .sum()
     }
 }
