@@ -7,26 +7,13 @@ fn main() {
 }
 
 fn part2(input: &str) -> u32 {
-    let (_, (workflows, parts)) = parse::input(&input).expect("Could not parse input");
+    let (_, workflows) = parse::input(&input).expect("Could not parse input");
 
     let workflow_map = WorkflowMap::from(workflows);
 
-    let mut total_x = 0;
-    let mut total_m = 0;
-    let mut total_a = 0;
-    let mut total_s = 0;
-        
-    for part in parts.iter() {
-        if workflow_map.is_accepted(part) {
-            total_x += part.x;
-            total_m += part.m;
-            total_a += part.a;
-            total_s += part.s;
-        }
-    }
-    
-    total_x + total_m + total_a + total_s
+    0
 }
+
 
 struct WorkflowMap {
     map: HashMap<String, Workflow>
@@ -46,22 +33,6 @@ impl WorkflowMap {
 
     pub fn get_start(&self) -> &Workflow {
         self.map.get("in").unwrap()
-    }
-
-    pub fn is_accepted(&self, part: &Part) -> bool {
-        let mut workflow = self.get_start();
-
-        loop {
-            let next_destination = workflow.route_part(part);
-
-            match next_destination {
-                Destination::Workflow(w_id) => {
-                    workflow = self.map.get(&w_id).expect("Workflow not found");
-                },
-                Destination::Accepted => return true,
-                Destination::Rejected => return false
-            }
-        };
     }
 }
 
@@ -83,16 +54,6 @@ impl Condition {
     pub fn new(category: char, operator: char, value: u32) -> Self {
         Self { category, operator, value }
     }
-
-    pub fn is_true_for(&self, part: &Part) -> bool {
-        let part_value = part.get_category(&self.category);
-
-        match self.operator {
-            '>' => part_value > self.value,
-            '<' => part_value < self.value,
-            _ => panic!("Paaants")
-        }
-    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -112,18 +73,6 @@ struct Workflow {
     id: String,
     rules: Vec<Rule>,
     otherwise: Destination,
-}
-
-impl Workflow {
-    pub fn route_part(&self, part: &Part) -> Destination {
-        for rule in self.rules.iter() {
-            if rule.condition.is_true_for(part) {
-                return rule.destination.clone()
-            }
-        }
-        
-        self.otherwise.clone()
-    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -153,14 +102,12 @@ impl Part {
 mod parse {
     use nom::{
         branch::alt,
-        bytes::complete::tag,
         character::complete::{alpha1,char,newline,one_of,u32},
         combinator::{map,value},
-        error::Error,
         multi::separated_list1,
         IResult,
         Parser,
-        sequence::{delimited,preceded,separated_pair,tuple}
+        sequence::{delimited,separated_pair,terminated,tuple}
     };
     use super::*;
 
@@ -213,47 +160,16 @@ mod parse {
         Ok((remaining, Workflow { id, rules, otherwise }))
     }
 
-    fn create_category_parser<'a>(
-        c: char
-    ) -> impl Parser<&'a str, u32, Error<&'a str>> {
-        preceded(
-            char(c).and(char('=')),
-            u32
-        )
-    }
-
-    fn part(input: &str) -> IResult<&str, Part> {
-        let (remaining, (x, _1, m, _2, a, _3, s)) = delimited(
-            tag("{"),
-            tuple((
-                create_category_parser('x'),
-                tag(","),
-                create_category_parser('m'),
-                tag(","),
-                create_category_parser('a'),
-                tag(","),
-                create_category_parser('s'),
-            )),
-            tag("}")
-        )(input)?;
-
-        Ok((remaining, Part { x, m, a, s }))
-    }
-
-    pub fn input(input: &str) -> IResult<&str, (Vec<Workflow>, Vec<Part>)> {
-        let (remaining, (workflows, parts)) = separated_pair(
+    pub fn input(input: &str) -> IResult<&str, Vec<Workflow>> {
+        let (remaining, workflows) = terminated(
             separated_list1(
                 newline,
                 parse_workflow
             ),
-            newline.and(newline),
-            separated_list1(
-                newline,
-                part
-            )
+            newline.and(newline)
         )(input)?;
         
-        Ok((remaining, (workflows, parts)))
+        Ok((remaining, workflows))
     }
 
     #[cfg(test)]
@@ -288,27 +204,6 @@ mod parse {
             
             assert_eq!(parse_workflow(&input), Ok(("", expected)));
         }
-        
-        #[test]
-        fn create_category_parser_ok() {
-            let input = r"x=787";
-            let mut parser = create_category_parser('x');
-            let result = parser.parse(&input);
-
-            assert_eq!(result, Ok(("", 787)));
-        }
-
-        #[test]
-        fn part_ok() {
-            let expected = Part::new(787, 2655, 1222, 2876);
-            
-            let input = r"{x=787,m=2655,a=1222,s=2876}";
-
-            let (_, value) = part(&input).expect("oh sh");
-
-            assert_eq!(expected, value);
-        }
-
     }
 }
 
