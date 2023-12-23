@@ -3,10 +3,10 @@ use std::collections::HashMap;
 fn main() {
     let input = include_str!("input.txt");
 
-    println!("{}", part1(&input));
+    println!("{}", part2(&input));
 }
 
-fn part1(input: &str) -> u32 {
+fn part2(input: &str) -> u32 {
     let (_, (workflows, parts)) = parse::input(&input).expect("Could not parse input");
 
     let workflow_map = WorkflowMap::from(workflows);
@@ -317,7 +317,7 @@ mod tests {
     use super::*;
     
     #[test]
-    fn part1_ok() {
+    fn part2_ok() {
         let input = r"px{a<2006:qkq,m>2090:A,rfg}
 pv{a>1716:R,A}
 lnx{m>1548:A,A}
@@ -337,7 +337,7 @@ hdj{m>838:A,pv}
 {x=2127,m=1623,a=2188,s=1013}
 ";
 
-        assert_eq!(19114, part1(&input));
+        assert_eq!(19114, part2(&input));
     }
 }
 
