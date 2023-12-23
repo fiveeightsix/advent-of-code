@@ -2,15 +2,14 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1,char,newline,one_of,u32},
-    combinator::{map_res,value,verify},
-    error::{Error,ParseError},
+    combinator::{map,value},
+    error::Error,
     multi::separated_list1,
     IResult,
     Parser,
-    sequence::{delimited,pair,preceded,separated_pair,tuple}
+    sequence::{delimited,preceded,separated_pair,tuple}
 };
 use std::collections::HashMap;
-use std::error;
 
 fn main() {
     let input = include_str!("input.txt");
@@ -18,8 +17,8 @@ fn main() {
     println!("{}", part1(&input));
 }
 
-fn part1(input: &str) -> usize {
-    let (_, (workflows, parts)) = parse_input(&input).expect("nuh uh");
+fn part1(input: &str) -> u32 {
+    let (_, (workflows, parts)) = parse_input(&input).expect("Could not parse input");
 
     let workflow_map = WorkflowMap::from(workflows);
 
@@ -27,13 +26,17 @@ fn part1(input: &str) -> usize {
     let mut total_m = 0;
     let mut total_a = 0;
     let mut total_s = 0;
-    
-    
-    for p in parts.iter() {
-        println!("{:?}", p);
+        
+    for part in parts.iter() {
+        if workflow_map.is_accepted(part) {
+            total_x += part.x;
+            total_m += part.m;
+            total_a += part.a;
+            total_s += part.s;
+        }
     }
     
-    0
+    total_x + total_m + total_a + total_s
 }
 
 struct WorkflowMap {
@@ -56,12 +59,20 @@ impl WorkflowMap {
         self.map.get("in").unwrap()
     }
 
-    pub fn is_accepted(&self, part: &Part) -> Result<bool, Box<dyn error::Error>> {
+    pub fn is_accepted(&self, part: &Part) -> bool {
         let mut workflow = self.get_start();
 
         loop {
-            
-        }
+            let next_destination = workflow.route_part(part);
+
+            match next_destination {
+                Destination::Workflow(w_id) => {
+                    workflow = self.map.get(&w_id).expect("Workflow not found");
+                },
+                Destination::Accepted => return true,
+                Destination::Rejected => return false
+            }
+        };
     }
 }
 
@@ -84,7 +95,7 @@ impl Condition {
         Self { category, operator, value }
     }
 
-    pub fn test_part(&self, part: &Part) -> bool {
+    pub fn is_true_for(&self, part: &Part) -> bool {
         let part_value = part.get_category(&self.category);
 
         match self.operator {
@@ -96,28 +107,33 @@ impl Condition {
 }
 
 #[derive(Debug, PartialEq)]
-enum Rule {
-    If(Condition, Destination),
-    Else(Destination)
+struct Rule {
+    condition: Condition,
+    destination: Destination,
+}
+
+impl Rule {
+    pub fn new(condition: Condition, destination: Destination) -> Self {
+        Self { condition, destination }
+    }
 }
 
 #[derive(Debug, PartialEq)]
 struct Workflow {
     id: String,
     rules: Vec<Rule>,
+    otherwise: Destination,
 }
 
 impl Workflow {
     pub fn route_part(&self, part: &Part) -> Destination {
-        // for rule in self.rules.iter() {
-        //     match rule {
-        //         If(cond, dest) if cond.test_part(part) => {
-        //             return dest
-        //         },
-        //         Else(dest) => return dest
-        //     }
-        // }
-        todo!();
+        for rule in self.rules.iter() {
+            if rule.condition.is_true_for(part) {
+                return rule.destination.clone()
+            }
+        }
+        
+        self.otherwise.clone()
     }
 }
 
@@ -140,30 +156,34 @@ fn parse_condition(input: &str) -> IResult<&str, Condition> {
 }
 
 fn parse_rule(input: &str) -> IResult<&str, Rule> {
-    alt((
+    map(
         separated_pair(
             parse_condition,
             char(':'),
             parse_destination
-        ).map(|(condition, destination)| Rule::If(condition, destination)),
-        parse_destination.map(|destination| Rule::Else(destination))
-    ))(input)
+        ),
+        |(condition, destination)| Rule { condition, destination }
+    )(input)
 }
 
 fn parse_workflow(input: &str) -> IResult<&str, Workflow> {
-    let (remaining, (id, rules)) = tuple((
+    let (remaining, (id, (rules, otherwise))) = tuple((
         alpha1.map(|s: &str| s.to_string()),
         delimited(
             char('{'),
-            separated_list1(
+            separated_pair(
+                separated_list1(
+                    char(','),
+                    parse_rule
+                ),
                 char(','),
-                parse_rule
+                parse_destination
             ),
             char('}'),
         )
     ))(input)?;
 
-    Ok((remaining, Workflow { id, rules }))
+    Ok((remaining, Workflow { id, rules, otherwise }))
 }
 
 #[derive(Debug, PartialEq)]
@@ -257,10 +277,10 @@ mod tests {
         let expected = Workflow {
             id: "px".to_string(),
             rules: vec![
-                Rule::If(Condition::new('a', '<', 2006), Destination::Workflow("qkq".to_string())),
-                Rule::If(Condition::new('m', '>', 2090), Destination::Accepted),
-                Rule::Else(Destination::Workflow("rfg".to_string()))
-            ]
+                Rule::new(Condition::new('a', '<', 2006), Destination::Workflow("qkq".to_string())),
+                Rule::new(Condition::new('m', '>', 2090), Destination::Accepted),
+            ],
+            otherwise: Destination::Workflow("rfg".to_string())
         };
         
         assert_eq!(parse_workflow(&input), Ok(("", expected)));
