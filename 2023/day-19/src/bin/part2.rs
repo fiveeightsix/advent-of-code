@@ -10,7 +10,7 @@ fn part2(input: &str) -> u32 {
     let (_, workflows) = parse::input(&input).expect("Could not parse input");
 
     let workflow_map = WorkflowMap::from(workflows);
-
+    
     0
 }
 
@@ -73,30 +73,6 @@ struct Workflow {
     id: String,
     rules: Vec<Rule>,
     otherwise: Destination,
-}
-
-#[derive(Debug, PartialEq)]
-struct Part {
-    x: u32,
-    m: u32,
-    a: u32,
-    s: u32,
-}
-
-impl Part {
-    pub fn new(x: u32, m: u32, a: u32, s: u32) -> Self {
-        Self { x, m, a, s }
-    }
-
-    pub fn get_category(&self, c: &char) -> u32 {
-        match c {
-            'x' => self.x,
-            'm' => self.m,
-            'a' => self.a,
-            's' => self.s,
-            _ => panic!("Noooooo")
-        }
-    }
 }
 
 mod parse {
