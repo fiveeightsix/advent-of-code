@@ -5,7 +5,7 @@ defmodule Mix.Tasks.D03.P1 do
 
   @shortdoc "Day 03 Part 1"
   def run(_args) do
-    path = Path.join(File.cwd!, "lib/advent_of_code/day_03/input.txt")
+    path = Path.join(File.cwd!, "lib/input/day_03.txt")
 
     case File.read(path) do
       {:ok, input} -> input

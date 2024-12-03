@@ -1,5 +1,5 @@
 defmodule AdventOfCode.Day03 do
-  defmodule MulParser do
+  defmodule Part1Parser do
     import NimbleParsec
 
     mul =
@@ -9,7 +9,7 @@ defmodule AdventOfCode.Day03 do
       |> integer(min: 1, max: 3)
       |> ignore(string(")"))
 
-    defparsec :mul_parser, mul |> eventually |> repeat
+    defparsec :mul, mul |> eventually |> repeat
   end
 
   def multiply_elements(list) do
@@ -17,7 +17,7 @@ defmodule AdventOfCode.Day03 do
   end
   
   def part1(input) do
-    case MulParser.mul_parser(input) do
+    case Part1Parser.mul(input) do
       {:ok, results, _, _, _, _} ->
         results
         |> Enum.chunk_every(2)
