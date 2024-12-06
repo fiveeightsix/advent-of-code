@@ -75,13 +75,11 @@ defmodule AdventOfCode.Day06 do
 
     path = step({map, width, height}, {x, y}, :north, [{x, y}])
 
-    visited = path
+    show_path(map, path)
+
+    path
     |> Enum.uniq
     |> Enum.count
-
-    show_path(map, path)
-    
-    visited
   end
 
   @doc "Render path on original map for debugging purposes"
@@ -100,6 +98,5 @@ defmodule AdventOfCode.Day06 do
       |> Enum.join
     end)
     |> Enum.map(&IO.puts/1)
-    |> IO.inspect
   end
 end
