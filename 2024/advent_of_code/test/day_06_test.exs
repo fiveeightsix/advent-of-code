@@ -121,7 +121,7 @@ defmodule AdventOfCode.Day06Test do
     #.........
     ......#...
     """
-
+    
     assert part1(input) == 41
   end
 end

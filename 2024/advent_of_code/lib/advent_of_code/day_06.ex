@@ -73,8 +73,33 @@ defmodule AdventOfCode.Day06 do
 
     {_, x, y} = find_in_row(map)
 
-    step({map, width, height}, {x, y}, :north, [])
+    path = step({map, width, height}, {x, y}, :north, [{x, y}])
+
+    visited = path
     |> Enum.uniq
     |> Enum.count
+
+    show_path(map, path)
+    
+    visited
+  end
+
+  @doc "Render path on original map for debugging purposes"
+  def show_path(map, path) do
+    map
+    |> Enum.with_index(fn row, i -> {i, row} end)
+    |> Enum.map(fn {i, row} ->
+      row
+      |> Enum.with_index(fn column, j -> {j, i, column} end)
+      |> Enum.map(fn {j, i, column} ->
+        case Enum.member?(path, {j, i}) do
+          true -> "X"
+          false -> column
+        end
+      end)
+      |> Enum.join
+    end)
+    |> Enum.map(&IO.puts/1)
+    |> IO.inspect
   end
 end
