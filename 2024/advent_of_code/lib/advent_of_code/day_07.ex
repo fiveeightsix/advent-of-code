@@ -14,15 +14,11 @@ defmodule AdventOfCode.Day07 do
   end
  
   
-  def find_operators_rec({total, []}, operators, current) when current === total do
+  defp find_operators_rec({total, []}, operators, current) when current === total do
     {:ok, operators, current}
   end
 
-  def find_operators_rec({total, []}, operators, current) do
-    {:fail}
-  end
-
-  def find_operators_rec({total, [head | tail]}, operators, current) when current <= total do
+  defp find_operators_rec({total, [head | tail]}, operators, current) when current <= total do
     lr = {
       find_operators_rec({total, tail}, [:add | operators], current + head),
       find_operators_rec({total, tail}, [:mul | operators], current * head),
@@ -35,7 +31,11 @@ defmodule AdventOfCode.Day07 do
     end
   end
 
-  def find_operators_rec({total, [head | _]}, operators, current) do
+  defp find_operators_rec({total, []}, operators, current) do
+    {:fail}
+  end
+
+  defp find_operators_rec({total, [head | _]}, operators, current) do
     {:fail}
   end
   
