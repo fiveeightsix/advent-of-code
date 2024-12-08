@@ -9,16 +9,11 @@ defmodule AdventOfCode.Day08 do
 
     {map, width, height}
   end
-
-  def locate_antennas_row(row) do
-    row
-
-  end     
   
   def locate_antennas(map) do
     map
     |> Enum.with_index(fn row, y -> {y, row} end)
-    |> Enum.reduce(%{}, fn {y, row}, locations ->
+    |> Enum.reduce(Map.new(), fn {y, row}, locations ->
       row
       |> Enum.with_index(fn cell, x -> {x, cell} end)
       |> Enum.reduce(locations, fn {x, cell}, locations ->
@@ -32,10 +27,17 @@ defmodule AdventOfCode.Day08 do
       end)
     end)
   end
+
+  def combinations(0, _), do: [[]]
+  def combinations(_, []), do: []
+  def combinations(k, [head|tail]) do
+    (for l <- combinations(k - 1, tail), do: [head | l]) ++ combinations(k, tail)
+  end
   
   def part1(input) do
     {map, _width, _height} = make_map(input)
 
     locate_antennas(map)
+    |> Enum.map(fn {k, v} -> {k, combinations(2, v)} end)
   end
 end
