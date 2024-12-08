@@ -1,4 +1,7 @@
 defmodule AdventOfCode.Day07 do
+  alias AdventOfCode.Day07.Part1
+  alias AdventOfCode.Day07.Part2
+  
   def parse_equation(line) do
     [total, rhs] = String.split(line, ": ", trim: true)
     
@@ -8,6 +11,42 @@ defmodule AdventOfCode.Day07 do
     {String.to_integer(total), terms}
   end
 
+  def part1(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn line ->
+      line
+      |> parse_equation()
+      |> Part1.find_operators()
+    end)
+    |> Enum.map(fn x ->
+      case x do
+        {:ok, _, total} -> total
+        {:fail} -> 0
+      end
+    end)
+    |> Enum.sum()
+  end
+  
+  def part2(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn line ->
+      line
+      |> parse_equation()
+      |> Part2.find_operators_2()
+    end)
+    |> Enum.map(fn x ->
+      case x do
+        {:ok, _, total} -> total
+        {:fail} -> 0
+      end
+    end)
+    |> Enum.sum()
+  end
+end
+
+defmodule AdventOfCode.Day07.Part1 do
   def find_operators({total, terms}) do
     [first_term | remaining_terms] = terms
     find_operators_rec({total, remaining_terms}, [], first_term)
@@ -32,24 +71,9 @@ defmodule AdventOfCode.Day07 do
 
   defp find_operators_rec({_, []}, _, _), do: {:fail}
   defp find_operators_rec({_, [_ | _]}, _, _), do: {:fail}
-  
-  def part1(input) do
-    input
-    |> String.split("\n", trim: true)
-    |> Enum.map(fn line ->
-      line
-      |> parse_equation()
-      |> find_operators()
-    end)
-    |> Enum.map(fn x ->
-      case x do
-        {:ok, _, total} -> total
-        {:fail} -> 0
-      end
-    end)
-    |> Enum.sum()
-  end
-  
+end
+
+defmodule AdventOfCode.Day07.Part2 do
   def concatenate(a, b), do: Enum.join([a, b], "") |> String.to_integer()
   
   def find_operators_2({total, terms}) do
@@ -78,21 +102,4 @@ defmodule AdventOfCode.Day07 do
 
   defp find_operators_2_rec({_, []}, _, _), do: {:fail}
   defp find_operators_2_rec({_, [_ | _]}, _, _), do: {:fail}
-
-  def part2(input) do
-    input
-    |> String.split("\n", trim: true)
-    |> Enum.map(fn line ->
-      line
-      |> parse_equation()
-      |> find_operators_2()
-    end)
-    |> Enum.map(fn x ->
-      case x do
-        {:ok, _, total} -> total
-        {:fail} -> 0
-      end
-    end)
-    |> Enum.sum()
-  end
 end
