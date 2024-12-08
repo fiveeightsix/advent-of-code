@@ -30,21 +30,16 @@ defmodule AdventOfCode.Day07 do
     end
   end
 
-  defp find_operators_rec({total, []}, operators, current) do
-    {:fail}
-  end
-
-  defp find_operators_rec({total, [head | _]}, operators, current) do
-    {:fail}
-  end
+  defp find_operators_rec({_, []}, _, _), do: {:fail}
+  defp find_operators_rec({_, [_ | _]}, _, _), do: {:fail}
   
   def part1(input) do
     input
     |> String.split("\n", trim: true)
     |> Enum.map(fn line ->
       line
-      |> parse_equation
-      |> find_operators
+      |> parse_equation()
+      |> find_operators()
     end)
     |> Enum.map(fn x ->
       case x do
@@ -52,12 +47,10 @@ defmodule AdventOfCode.Day07 do
         {:fail} -> 0
       end
     end)
-    |> Enum.sum
+    |> Enum.sum()
   end
-
-  def concatenate(a, b) do
-    Enum.join([a, b], "") |> String.to_integer
-  end
+  
+  def concatenate(a, b), do: Enum.join([a, b], "") |> String.to_integer()
   
   def find_operators_2({total, terms}) do
     [first_term | remaining_terms] = terms
@@ -83,21 +76,16 @@ defmodule AdventOfCode.Day07 do
     end
   end
 
-  defp find_operators_2_rec({total, []}, operators, current) do
-    {:fail}
-  end
-
-  defp find_operators_2_rec({total, [head | _]}, operators, current) do
-    {:fail}
-  end
+  defp find_operators_2_rec({_, []}, _, _), do: {:fail}
+  defp find_operators_2_rec({_, [_ | _]}, _, _), do: {:fail}
 
   def part2(input) do
     input
     |> String.split("\n", trim: true)
     |> Enum.map(fn line ->
       line
-      |> parse_equation
-      |> find_operators_2
+      |> parse_equation()
+      |> find_operators_2()
     end)
     |> Enum.map(fn x ->
       case x do
@@ -105,6 +93,6 @@ defmodule AdventOfCode.Day07 do
         {:fail} -> 0
       end
     end)
-    |> Enum.sum
+    |> Enum.sum()
   end
 end
