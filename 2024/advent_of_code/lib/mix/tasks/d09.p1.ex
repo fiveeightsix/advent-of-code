@@ -5,7 +5,7 @@ defmodule Mix.Tasks.D09.P1 do
 
   @shortdoc "Day 09 part 1"
   def run(args) do
-    path = Path.join(File.cwd!, "lib/input/day_09.txt")
+    path = Path.join(File.cwd!(), "lib/input/day_09.txt")
 
     case File.read(path) do
       {:ok, input} ->
@@ -16,7 +16,9 @@ defmodule Mix.Tasks.D09.P1 do
           |> part1()
           |> IO.inspect(label: "Part 1 results")
         end
-      {:error, message} -> IO.puts(message)
+
+      {:error, message} ->
+        IO.puts(message)
     end
   end
 end

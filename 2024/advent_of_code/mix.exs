@@ -22,7 +22,7 @@ defmodule AdventOfCode.MixProject do
   defp deps do
     [
       {:nimble_parsec, "~> 1.4.0"},
-      {:benchee, "~> 1.3.0"},
+      {:benchee, "~> 1.3.0"}
     ]
   end
 end

@@ -2,6 +2,7 @@ defmodule AdventOfCode.Day06Test do
   use ExUnit.Case
 
   import AdventOfCode.Day06
+
   test "make_map" do
     input = """
     ....#.....
@@ -15,7 +16,7 @@ defmodule AdventOfCode.Day06Test do
     #.........
     ......#...
     """
-    
+
     {_, width, height} = make_map(input)
 
     assert width == 10
@@ -74,39 +75,38 @@ defmodule AdventOfCode.Day06Test do
     assert in_front({0, 0}, :south) === {0, 1}
     assert in_front({0, 0}, :west) === {-1, 0}
   end
-  
+
   test "step - at boundary north" do
     map = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
-    expected_path =  [{1, 1}]
-    
+    expected_path = [{1, 1}]
+
     assert step({map, 3, 3}, {1, 0}, :north, expected_path) === expected_path
   end
 
   test "step - at boundary east" do
     map = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
-    expected_path =  [{1, 1}]
-    
+    expected_path = [{1, 1}]
+
     assert step({map, 3, 3}, {2, 1}, :east, expected_path) === expected_path
   end
 
   test "step - at boundary south" do
     map = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
-    expected_path =  [{1, 1}]
-    
+    expected_path = [{1, 1}]
+
     assert step({map, 3, 3}, {1, 2}, :south, expected_path) === expected_path
   end
 
   test "step - at boundary west" do
     map = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
-    expected_path =  [{1, 1}]
-    
+    expected_path = [{1, 1}]
+
     assert step({map, 3, 3}, {0, 1}, :west, expected_path) === expected_path
   end
-
 
   test "part 1" do
     input = """
@@ -121,9 +121,7 @@ defmodule AdventOfCode.Day06Test do
     #.........
     ......#...
     """
-    
+
     assert part1(input) == 41
   end
 end
-
-    

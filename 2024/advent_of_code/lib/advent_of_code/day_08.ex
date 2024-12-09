@@ -1,15 +1,16 @@
 defmodule AdventOfCode.Day08 do
   def make_map(input) do
-    map = input
-    |> String.split("\n", trim: true)
-    |> Enum.map(fn x -> String.split(x, "", trim: true) end)
+    map =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn x -> String.split(x, "", trim: true) end)
 
     height = Enum.count(map)
     width = Enum.count(List.first(map))
 
     {map, width, height}
   end
-  
+
   def locate_antennas(map) do
     map
     |> Enum.with_index(fn row, y -> {y, row} end)
@@ -30,20 +31,21 @@ defmodule AdventOfCode.Day08 do
 
   def combinations(0, _), do: [[]]
   def combinations(_, []), do: []
-  def combinations(k, [head|tail]) do
-    (for l <- combinations(k - 1, tail), do: [head | l]) ++ combinations(k, tail)
+
+  def combinations(k, [head | tail]) do
+    for(l <- combinations(k - 1, tail), do: [head | l]) ++ combinations(k, tail)
   end
 
   def antinodes({ax, ay}, {bx, by}) do
     {dx, dy} = {bx - ax, by - ay}
-    
+
     [{ax - dx, ay - dy}, {bx + dx, by + dy}]
   end
 
   def outside_map?({x, y}, width, height) do
     x < 0 or x >= width or y < 0 or y >= height
   end
-  
+
   def part1(input) do
     {map, width, height} = make_map(input)
 
@@ -57,25 +59,27 @@ defmodule AdventOfCode.Day08 do
   end
 
   defguard is_inside_map(x, y, width, height) when x >= 0 and x < width and y >= 0 and y < height
-  
-  def antinodes_2_add({x, y} = a, {dx, dy} = d, width, height) when is_inside_map(x, y, width, height) do
+
+  def antinodes_2_add({x, y} = a, {dx, dy} = d, width, height)
+      when is_inside_map(x, y, width, height) do
     [a | antinodes_2_add({x + dx, y + dy}, d, width, height)]
   end
 
   def antinodes_2_add(_, _, _, _), do: []
 
-  def antinodes_2_sub({x, y} = a, {dx, dy} = d, width, height) when is_inside_map(x, y, width, height) do
+  def antinodes_2_sub({x, y} = a, {dx, dy} = d, width, height)
+      when is_inside_map(x, y, width, height) do
     [a | antinodes_2_sub({x - dx, y - dy}, d, width, height)]
   end
 
   def antinodes_2_sub(_, _, _, _), do: []
-  
+
   def antinodes_2({ax, ay} = a, {bx, by} = b, width, height) do
     d = {bx - ax, by - ay}
-    
+
     antinodes_2_sub(a, d, width, height) ++ antinodes_2_add(b, d, width, height)
   end
-  
+
   def part2(input) do
     {map, width, height} = make_map(input)
 

@@ -1,13 +1,14 @@
 defmodule AdventOfCode.Day07 do
   alias AdventOfCode.Day07.Part1
   alias AdventOfCode.Day07.Part2
-  
+
   def parse_equation(line) do
     [total, rhs] = String.split(line, ": ", trim: true)
-    
-    terms = String.split(rhs, " ", trim: true)
-    |> Enum.map(&String.to_integer/1)
-    
+
+    terms =
+      String.split(rhs, " ", trim: true)
+      |> Enum.map(&String.to_integer/1)
+
     {String.to_integer(total), terms}
   end
 
@@ -27,7 +28,7 @@ defmodule AdventOfCode.Day07 do
     end)
     |> Enum.sum()
   end
-  
+
   def part2(input) do
     input
     |> String.split("\n", trim: true)
@@ -50,8 +51,8 @@ defmodule AdventOfCode.Day07.Part1 do
   def find_operators({total, terms}) do
     [first_term | remaining_terms] = terms
     find_operators_rec({total, remaining_terms}, [], first_term)
-  end 
-  
+  end
+
   defp find_operators_rec({total, []}, operators, current) when current === total do
     {:ok, operators, current}
   end
@@ -59,7 +60,7 @@ defmodule AdventOfCode.Day07.Part1 do
   defp find_operators_rec({total, [head | tail]}, operators, current) when current <= total do
     lr = {
       find_operators_rec({total, tail}, [:add | operators], current + head),
-      find_operators_rec({total, tail}, [:mul | operators], current * head),
+      find_operators_rec({total, tail}, [:mul | operators], current * head)
     }
 
     case lr do
@@ -75,12 +76,12 @@ end
 
 defmodule AdventOfCode.Day07.Part2 do
   def concatenate(a, b), do: Enum.join([a, b], "") |> String.to_integer()
-  
+
   def find_operators_2({total, terms}) do
     [first_term | remaining_terms] = terms
     find_operators_2_rec({total, remaining_terms}, [], first_term)
-  end 
-  
+  end
+
   defp find_operators_2_rec({total, []}, operators, current) when current === total do
     {:ok, operators, current}
   end
@@ -91,7 +92,7 @@ defmodule AdventOfCode.Day07.Part2 do
       find_operators_2_rec({total, tail}, [:mul | operators], current * head),
       find_operators_2_rec({total, tail}, [:con | operators], concatenate(current, head))
     }
-    
+
     case lr do
       {{:fail}, {:fail}, {:fail}} -> {:fail}
       {{:ok, operators, curent}, {:fail}, {:fail}} -> {:ok, operators, curent}

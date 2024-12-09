@@ -1,6 +1,6 @@
 defmodule AdventOfCode.Day06 do
   def find_in_column(row, x \\ 0)
-  
+
   def find_in_column([head | tail], x) do
     case head do
       "^" -> {:some, x}
@@ -24,11 +24,12 @@ defmodule AdventOfCode.Day06 do
   def find_in_row([], _) do
     {:none}
   end
-  
+
   def make_map(input) do
-    map = input
-    |> String.split("\n", trim: true)
-    |> Enum.map(fn x -> String.split(x, "", trim: true) end)
+    map =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn x -> String.split(x, "", trim: true) end)
 
     height = Enum.count(map)
     width = Enum.count(List.first(map))
@@ -56,10 +57,18 @@ defmodule AdventOfCode.Day06 do
 
   def step({map, width, height}, current_position, direction, path) do
     case in_front(current_position, direction) do
-      {x, _} when x < 0 -> path
-      {x, _} when x >= width -> path
-      {_, y} when y < 0 -> path
-      {_, y} when y >= height -> path
+      {x, _} when x < 0 ->
+        path
+
+      {x, _} when x >= width ->
+        path
+
+      {_, y} when y < 0 ->
+        path
+
+      {_, y} when y >= height ->
+        path
+
       {x, y} ->
         case Enum.at(Enum.at(map, y), x) do
           "#" -> step({map, width, height}, current_position, turn_right(direction), path)
@@ -67,7 +76,7 @@ defmodule AdventOfCode.Day06 do
         end
     end
   end
-  
+
   def part1(input) do
     {map, width, height} = make_map(input)
 
@@ -78,8 +87,8 @@ defmodule AdventOfCode.Day06 do
     show_path(map, path)
 
     path
-    |> Enum.uniq
-    |> Enum.count
+    |> Enum.uniq()
+    |> Enum.count()
   end
 
   @doc "Render path on original map for debugging purposes"
@@ -95,7 +104,7 @@ defmodule AdventOfCode.Day06 do
           false -> column
         end
       end)
-      |> Enum.join
+      |> Enum.join()
     end)
     |> Enum.map(&IO.puts/1)
   end

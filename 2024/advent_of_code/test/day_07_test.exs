@@ -5,7 +5,7 @@ defmodule AdventOfCode.Day07Test do
   test "parse equation" do
     line = "190: 10 19"
 
-    assert { 190, [10, 19] } === parse_equation(line)
+    assert {190, [10, 19]} === parse_equation(line)
   end
 
   test "part 1" do
@@ -51,7 +51,7 @@ defmodule AdventOfCode.Day07Part1Test do
 
     assert {:ok, [:mul], 190} === find_operators({total, terms})
   end
-  
+
   test "find operators '292: 11 6 16 20'" do
     total = 292
     terms = [11, 6, 16, 20]
@@ -64,7 +64,7 @@ defmodule AdventOfCode.Day07Part1Test do
     terms = [81, 40, 27]
 
     {result, _, _} = find_operators({total, terms})
-    
+
     assert result === :ok
   end
 end
@@ -72,7 +72,7 @@ end
 defmodule AdventOfCode.Day07Part2Test do
   use ExUnit.Case
   import AdventOfCode.Day07.Part2
-  
+
   test "concatenate" do
     assert 12 === concatenate("1", "2")
   end
@@ -83,7 +83,7 @@ defmodule AdventOfCode.Day07Part2Test do
 
     assert {:ok, [:mul], 190} === find_operators_2({total, terms})
   end
-  
+
   test "find operators 2 '292: 11 6 16 20'" do
     total = 292
     terms = [11, 6, 16, 20]
@@ -96,7 +96,7 @@ defmodule AdventOfCode.Day07Part2Test do
     terms = [81, 40, 27]
 
     {result, _, _} = find_operators_2({total, terms})
-    
+
     assert result === :ok
   end
 
@@ -114,5 +114,3 @@ defmodule AdventOfCode.Day07Part2Test do
     assert {:ok, [:mul, :con, :mul], 7290} === find_operators_2({total, terms})
   end
 end
-
-    
