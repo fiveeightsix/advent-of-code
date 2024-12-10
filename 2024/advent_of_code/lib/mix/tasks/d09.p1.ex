@@ -5,12 +5,12 @@ defmodule Mix.Tasks.D09.P1 do
 
   @shortdoc "Day 09 part 1"
   def run(args) do
-    path = Path.join(File.cwd!(), "lib/input/day_09.txt")
+    path = File.cwd!() |> Path.join("lib/input/day_09.txt")
 
     case File.read(path) do
       {:ok, input} ->
         if Enum.member?(args, "-b") do
-          Benchee.run(%{part_1: fn input -> input |> part1() end})
+          Benchee.run(%{part_1: fn -> input |> part1() end})
         else
           input
           |> part1()

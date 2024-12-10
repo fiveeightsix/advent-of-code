@@ -3,11 +3,11 @@ defmodule AdventOfCode.Day09 do
     layout =
       input
       |> String.split("", trim: true)
-      |> Enum.map(&Integer.parse/1)
-      |> Enum.reject(fn x -> x === :error end)
-      |> Enum.map(fn {i, _} -> i end)
-      |> Enum.with_index()
-      |> Enum.flat_map(fn {element, index} ->
+      |> Stream.map(&Integer.parse/1)
+      |> Stream.reject(fn x -> x === :error end)
+      |> Stream.map(fn {i, _} -> i end)
+      |> Stream.with_index()
+      |> Stream.flat_map(fn {element, index} ->
         case {element, index} do
           {0, _} ->
             []
@@ -19,7 +19,7 @@ defmodule AdventOfCode.Day09 do
             for _ <- 1..element, do: {:space}
         end
       end)
-      |> Enum.with_index()
+      |> Stream.with_index()
       |> Map.new(fn {element, index} -> {index, element} end)
 
     {layout, map_size(layout)}
@@ -41,7 +41,7 @@ defmodule AdventOfCode.Day09 do
     compacted_layout = compact(layout, 0, size - 1)
 
     0..(size - 1)
-    |> Enum.map(fn i -> {compacted_layout[i], i} end)
+    |> Stream.map(fn i -> {compacted_layout[i], i} end)
     |> Enum.reduce(0, fn {block, i}, checksum ->
       case block do
         {:file, file_id} -> checksum + file_id * i
