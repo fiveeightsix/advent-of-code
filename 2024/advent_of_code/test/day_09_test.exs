@@ -1,6 +1,7 @@
 defmodule AdventOfCode.Day09Test do
   use ExUnit.Case
   import AdventOfCode.Day09
+  alias AdventOfCode.Day09.Debug
 
   test "disk layout" do
     input = """
@@ -9,7 +10,7 @@ defmodule AdventOfCode.Day09Test do
 
     expected = "00...111...2...333.44.5555.6666.777.888899"
 
-    actual = input |> disk_layout() |> layout_to_string()
+    actual = input |> disk_layout() |> Debug.layout_to_string()
 
     assert actual === expected
   end
@@ -25,7 +26,7 @@ defmodule AdventOfCode.Day09Test do
 
     compacted_layout = compact(layout, 0, size - 1)
 
-    actual = layout_to_string({compacted_layout, size})
+    actual = Debug.layout_to_string({compacted_layout, size})
 
     assert actual === expected
   end

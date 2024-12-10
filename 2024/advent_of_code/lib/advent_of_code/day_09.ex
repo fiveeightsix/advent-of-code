@@ -49,7 +49,9 @@ defmodule AdventOfCode.Day09 do
       end
     end)
   end
+end
 
+defmodule AdventOfCode.Day09.Debug do
   def layout_to_string({layout, size}) do
     0..(size - 1)
     |> Enum.map(fn i -> layout[i] end)
